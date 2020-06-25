@@ -12,7 +12,7 @@ export default class Screen1 extends React.Component {
     render() {
         return (
             <ImageBackground source={image} style={styles.image}>
-                <Text style={styles.title}>App Title</Text>
+                <Text style={styles.title}>Chat App</Text>
                 <View style={styles.box}>
                     {/* Text input to enter name for chatrooms */}
                     <TextInput style={styles.input}
@@ -23,6 +23,10 @@ export default class Screen1 extends React.Component {
                     <View style={styles.colorPicker}>
                         {/* circles to choose the color from */}
                         <TouchableOpacity
+                            accessible={true}
+                            accessibilityLabel="Black background"
+                            accessibilityHint="Lets you choose what color is the background."
+                            accessibilityRole="button"
                             style={this.state.active1 ? styles.circlePress : styles.circle}
                             // when pressed the state will be set to this color
                             onPress={() => this.setState({ color: '#090C08', active1: !this.state.active1 })}
@@ -30,18 +34,30 @@ export default class Screen1 extends React.Component {
                             </View>
                         </TouchableOpacity>
                         <TouchableOpacity
+                            accessible={true}
+                            accessibilityLabel="Purple background"
+                            accessibilityHint="Lets you choose what color is the background."
+                            accessibilityRole="button"
                             style={this.state.active2 ? styles.circlePress : styles.circle}
                             onPress={() => this.setState({ color: '#474056', active2: !this.state.active2 })}
                         ><View style={[styles.circle, { backgroundColor: '#474056' }]}>
                             </View>
                         </TouchableOpacity>
                         <TouchableOpacity
+                            accessible={true}
+                            accessibilityLabel="Blue background"
+                            accessibilityHint="Lets you choose what color is the background."
+                            accessibilityRole="button"
                             style={this.state.active3 ? styles.circlePress : styles.circle}
                             onPress={() => this.setState({ color: '#8A95A5', active3: !this.state.active3 })}
                         ><View style={[styles.circle, { backgroundColor: '#8A95A5' }]}>
                             </View>
                         </TouchableOpacity>
                         <TouchableOpacity
+                            accessible={true}
+                            accessibilityLabel="Green background"
+                            accessibilityHint="Lets you choose what color is the background."
+                            accessibilityRole="button"
                             style={this.state.active4 ? styles.circlePress : styles.circle}
                             onPress={() => this.setState({ color: '#B9C6AE', active4: !this.state.active4 })}
                         ><View style={[styles.circle, { backgroundColor: '#B9C6AE' }]}>
