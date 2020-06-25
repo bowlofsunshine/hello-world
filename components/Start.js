@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, Button, ImageBackground, StyleSheet } from 'react-native';
-import { TextInput, TouchableWithoutFeedback } from 'react-native-gesture-handler';
+import { TextInput, TouchableOpacity } from 'react-native-gesture-handler';
 const image = require('../A5_project_assets/Background_Image.png');
 const icon = require('../A5_project_assets/icon.svg');
 export default class Screen1 extends React.Component {
@@ -14,33 +14,46 @@ export default class Screen1 extends React.Component {
             <ImageBackground source={image} style={styles.image}>
                 <Text style={styles.title}>App Title</Text>
                 <View style={styles.box}>
+                    {/* Text input to enter name for chatrooms */}
                     <TextInput style={styles.input}
                         onChangeText={(name) => this.setState({ name })}
                         value={this.state.name}
                         placeholder='Your Name' />
                     <Text style={styles.bgText}>Choose a Background Color</Text>
                     <View style={styles.colorPicker}>
-                        <TouchableWithoutFeedback
-                            style={[styles.circle, { backgroundColor: '#090C08' }]}
-                            onPress={() => this.setState({ color: '#090C08' })}
-                        />
-                        <TouchableWithoutFeedback
-                            style={[styles.circle, { backgroundColor: '#474056' }]}
-                            onPress={() => this.setState({ color: '#474056' })}
-                        />
-                        <TouchableWithoutFeedback
-                            style={[styles.circle, { backgroundColor: '#8A95A5' }]}
-                            onPress={() => this.setState({ color: '#8A95A5' })}
-                        />
-                        <TouchableWithoutFeedback
-                            style={[styles.circle, { backgroundColor: '#B9C6AE' }]}
-                            onPress={() => this.setState({ color: '#B9C6AE' })}
-                        />
+                        {/* circles to choose the color from */}
+                        <TouchableOpacity
+                            style={this.state.active1 ? styles.circlePress : styles.circle}
+                            // when pressed the state will be set to this color
+                            onPress={() => this.setState({ color: '#090C08', active1: !this.state.active1 })}
+                        ><View style={[styles.circle, { backgroundColor: '#090C08' }]}>
+                            </View>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            style={this.state.active2 ? styles.circlePress : styles.circle}
+                            onPress={() => this.setState({ color: '#474056', active2: !this.state.active2 })}
+                        ><View style={[styles.circle, { backgroundColor: '#474056' }]}>
+                            </View>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            style={this.state.active3 ? styles.circlePress : styles.circle}
+                            onPress={() => this.setState({ color: '#8A95A5', active3: !this.state.active3 })}
+                        ><View style={[styles.circle, { backgroundColor: '#8A95A5' }]}>
+                            </View>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            style={this.state.active4 ? styles.circlePress : styles.circle}
+                            onPress={() => this.setState({ color: '#B9C6AE', active4: !this.state.active4 })}
+                        ><View style={[styles.circle, { backgroundColor: '#B9C6AE' }]}>
+                            </View>
+                        </TouchableOpacity>
                     </View>
                     <View style={styles.chatButton}>
                         <Button
+                            //color of the title
                             color='#FFFFFF'
                             title="Start Chattings"
+                            //on press will take you to this next screen with the new set states in place 
                             onPress={() => this.props.navigation.navigate('Chat', { name: this.state.name, color: this.state.color })}
                         />
                     </View>
@@ -63,14 +76,28 @@ const styles = StyleSheet.create({
         flex: 4,
         flexDirection: 'row',
         alignSelf: 'flex-start',
-        width: '88%',
-        paddingLeft: 16
+        width: '80%',
+        justifyContent: 'space-around',
+        paddingLeft: 16,
+        marginTop: 4
+
     },
     circle: {
+        position: 'relative',
         height: 40,
         width: 40,
-        borderRadius: 70,
-        margin: 10
+        borderRadius: 40,
+        margin: 2,
+        borderWidth: 0,
+        borderColor: 'white'
+
+    },
+    circlePress: {
+        backgroundColor: 'white',
+        alignSelf: 'center',
+        borderRadius: 40,
+        borderColor: '#757083',
+        borderWidth: 2,
     },
     image: {
         flex: 1,
@@ -119,6 +146,7 @@ const styles = StyleSheet.create({
         flex: 1,
         width: '88%',
         paddingLeft: 24,
+        paddingBottom: 8
 
     },
 })
