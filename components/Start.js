@@ -1,6 +1,8 @@
 import React from 'react';
 import { View, Text, Button, ImageBackground, StyleSheet } from 'react-native';
 import { TextInput, TouchableOpacity } from 'react-native-gesture-handler';
+const firebase = require('firebase');
+require('firebase/firestore');
 const image = require('../A5_project_assets/Background_Image.png');
 const icon = require('../A5_project_assets/icon.svg');
 export default class Screen1 extends React.Component {
