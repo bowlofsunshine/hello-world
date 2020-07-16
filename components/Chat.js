@@ -1,9 +1,14 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, AsyncStorage, StatusBar, InputToolbar } from 'react-native';
+import { View, Text, StyleSheet, AsyncStorage, StatusBar, InputToolbar, KeyboardAvoidingView } from 'react-native';
 import NetInfo from "@react-native-community/netinfo";
 import { GiftedChat, Bubble } from 'react-native-gifted-chat'
 import KeyboardSpacer from "react-native-keyboard-spacer";
-import { Platform } from 'react-native'
+import { Platform } from 'react-native';
+import CustomActions from './CustomActions';
+import * as Permissions from 'expo-permissions';
+import * as ImagePicker from 'expo-image-picker';
+import * as Location from 'expo-location';
+import MapView from 'react-native-maps';
 const firebase = require('firebase');
 require('firebase/firestore');
 
@@ -19,6 +24,8 @@ export default class Chat extends React.Component {
             },
             uid: 0,
             isConnected: false,
+            image: null,
+            location: null
         };
         // connect to firestore app
         if (!firebase.apps.length) {
@@ -174,10 +181,12 @@ export default class Chat extends React.Component {
     addMessage() {
         this.referenceMessages.add({
             _id: this.state.messages[0]._id,
-            text: this.state.messages[0].text,
+            text: this.state.messages[0].text || '',
             createdAt: this.state.messages[0].createdAt,
             user: this.state.messages[0].user,
-            uid: this.state.uid
+            uid: this.state.uid,
+            image: this.state.messages[0].image || '',
+            location: this.state.messages[0].location || '',
         });
     }
 
@@ -187,15 +196,16 @@ export default class Chat extends React.Component {
             var data = doc.data();
             messages.push({
                 _id: data._id,
-                text: data.text.toString(),
+                text: data.text.toString() || '',
                 createdAt: data.createdAt,
                 user: {
                     _id: data.user._id,
                     name: data.user.name,
                     avatar: data.user.avatar
-                }
+                },
+                image: data.image || '',
+                location: data.location || '',
             });
-            console.log(data.createdAt);
         });
         this.setState({
             messages
@@ -229,6 +239,34 @@ export default class Chat extends React.Component {
             );
         }
     }
+    //renderCustomActions function is responsible for creating the circle button
+    renderCustomActions = (props) => {
+        return <CustomActions {...props} />;
+    };
+    //function is where you’ll check if the currentMessage contains location data
+    renderCustomView(props) {
+        const { currentMessage } = props;
+        // If the answer is yes, it will return a MapView
+        if (currentMessage.location) {
+            return (
+                <MapView
+                    style={{
+                        width: 150,
+                        height: 100,
+                        borderRadius: 13,
+                        margin: 3
+                    }}
+                    region={{
+                        latitude: currentMessage.location.latitude,
+                        longitude: currentMessage.location.longitude,
+                        latitudeDelta: 0.0922,
+                        longitudeDelta: 0.0421,
+                    }}
+                />
+            );
+        }
+        return null;
+    }
     render() {
         let name = this.props.route.params.name;
         let color = this.props.route.params.color;
@@ -238,11 +276,18 @@ export default class Chat extends React.Component {
         this.props.navigation.setOptions({ backgroundColor: color });
 
         return (
+
             <View style={[styles.container, { backgroundColor: color }]}>
 
                 {/* <StatusBar backgroundColor="blue" barStyle="light-content" /> */}
                 {/* Gifted Chat provides its own component & comes with its own props */}
+
                 <GiftedChat
+                    //The renderCustomActions function is responsible for creating the circle button
+                    renderActions={this.renderCustomActions}
+                    inverted={true}
+                    //add the prop renderCustomView to your GiftedChat component and let it call a function.
+                    renderCustomView={this.renderCustomView}
                     //customizing the renderBubble prop to change bubble color
                     renderBubble={this.renderBubble.bind(this)}
                     //provide GiftedChat with your messages
@@ -254,9 +299,11 @@ export default class Chat extends React.Component {
                         _id: 1,
                     }}
                 />
+
                 {/* shifts the keyboard so you can see what you're typing */}
                 {Platform.OS === 'android' ? <KeyboardSpacer /> : null}
             </View >
+
         );
     };
 }
