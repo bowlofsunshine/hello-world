@@ -88,24 +88,28 @@ export default class Chat extends React.Component {
                     isConnected: true,
                 })
                 this.authUnsubscribe = firebase.auth().onAuthStateChanged(async user => {
-                    if (!user) {
-                        await firebase.auth().signInAnonymously();
-                    }
-                    //update user state with currently active user data
-                    this.setState({
-                        uid: user.uid,
-                        loggedInText: "helloooooooo",
-                        user: {
-                            _id: user.uid,
-                            name: this.props.route.params.name + " entered the chat",
-                            avatar: '',
-                        },
-                    });
+                    try {
+                        if (!user) {
+                            await firebase.auth().signInAnonymously();
+                        }
+                        //update user state with currently active user data
+                        this.setState({
+                            uid: user.uid,
+                            loggedInText: "helloooooooo",
+                            user: {
+                                _id: user.uid,
+                                name: this.props.route.params.name + " entered the chat",
+                                avatar: '',
+                            },
+                        });
 
-                    // create a reference to the active user's documents (messages)
-                    this.referenceMessages = firebase.firestore().collection("messages");
-                    // listen for collection changes for current user
-                    this.unsubscribeMessager = this.referenceMessages.onSnapshot(this.onCollectionUpdate);
+                        // create a reference to the active user's documents (messages)
+                        this.referenceMessages = firebase.firestore().collection("messages");
+                        // listen for collection changes for current user
+                        this.unsubscribeMessager = this.referenceMessages.onSnapshot(this.onCollectionUpdate);
+                    } catch (error) {
+                        console.log(error.message);
+                    }
                 });
             } else {
                 console.log('offline');
@@ -193,7 +197,7 @@ export default class Chat extends React.Component {
     onCollectionUpdate = querySnapshot => {
         const messages = [];
         querySnapshot.forEach(doc => {
-            var data = doc.data();
+            let data = doc.data();
             messages.push({
                 _id: data._id,
                 text: data.text.toString() || '',

@@ -17,20 +17,24 @@ export default class CustomActions extends React.Component {
     pickImage = async () => {
         //ask the user for permission
         const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
-        //If the user grants you access to their device’s gallery, this function will return the string granted
-        if (status === 'granted') {
-            //after granted call launchImageLibraryAsync to let them pick a file
-            let result = await ImagePicker.launchImageLibraryAsync({
-                //the user should choose only from their images.'all' would allow videos as well. 
-                mediaTypes: 'Images',
-            }).catch(error => console.log(error));
+        try {
+            //If the user grants you access to their device’s gallery, this function will return the string granted
+            if (status === 'granted') {
+                //after granted call launchImageLibraryAsync to let them pick a file
+                let result = await ImagePicker.launchImageLibraryAsync({
+                    //the user should choose only from their images.'all' would allow videos as well. 
+                    mediaTypes: 'Images',
+                }).catch(error => console.log(error));
 
-            if (!result.cancelled) {
-                //returns an object containing a uri to the media file along with its width, height, and file type.
-                const imageUrl = await this.uploadImage(result.uri);
-                this.props.onSend({ image: imageUrl })
+                if (!result.cancelled) {
+                    //returns an object containing a uri to the media file along with its width, height, and file type.
+                    const imageUrl = await this.uploadImage(result.uri);
+                    this.props.onSend({ image: imageUrl })
+                }
+
             }
-
+        } catch (error) {
+            console.log(error.message);
         }
     }
 
@@ -40,65 +44,77 @@ export default class CustomActions extends React.Component {
             Permissions.CAMERA,
             Permissions.CAMERA_ROLL
         );
-        //If the user grants you access to their device’s gallery & camera, this function will return the string granted
-        if (status === 'granted') {
-            //after granted call launchCameraAsync to have the camera to open for a photo 
-            let result = await ImagePicker.launchCameraAsync({
-                mediaTypes: 'Images',
-            }).catch(error => console.log(error));
+        try {
+            //If the user grants you access to their device’s gallery & camera, this function will return the string granted
+            if (status === 'granted') {
+                //after granted call launchCameraAsync to have the camera to open for a photo 
+                let result = await ImagePicker.launchCameraAsync({
+                    mediaTypes: 'Images',
+                }).catch(error => console.log(error));
 
-            if (!result.cancelled) {
-                const imageUrl = await this.uploadImage(result.uri);
-                this.props.onSend({ image: imageUrl });
+                if (!result.cancelled) {
+                    const imageUrl = await this.uploadImage(result.uri);
+                    this.props.onSend({ image: imageUrl });
+                }
+
             }
-
+        } catch (error) {
+            console.log(error.message);
         }
     }
 
     getLocation = async () => {
-        //ask the user for permission
-        const { status } = await Permissions.askAsync(Permissions.LOCATION);
-        ////If the user grants you access to their device’s location, this function will return the string granted
-        if (status === 'granted') {
-            //after granted call getCurrentPositionAsync to have the location be sent
-            let result = await Location.getCurrentPositionAsync({}).catch(error => console.log(error));
+        try {
+            //ask the user for permission
+            const { status } = await Permissions.askAsync(Permissions.LOCATION);
+            ////If the user grants you access to their device’s location, this function will return the string granted
+            if (status === 'granted') {
+                //after granted call getCurrentPositionAsync to have the location be sent
+                let result = await Location.getCurrentPositionAsync({}).catch(error => console.log(error));
 
-            if (result) {
-                this.props.onSend({
-                    location: {
-                        longitude: result.coords.longitude,
-                        latitude: result.coords.latitude,
-                    },
-                });
+                if (result) {
+                    this.props.onSend({
+                        location: {
+                            longitude: result.coords.longitude,
+                            latitude: result.coords.latitude,
+                        },
+                    });
+                }
             }
+        } catch (error) {
+            console.log(error.message);
         }
     }
 
     onActionPress = () => {
         const options = ['Choose From Library', 'Take Picture', 'Send Location', 'Cancel'];
         const cancelButtonIndex = options.length - 1;
-        //used to hand down data (the options you want to display) to the ActionSheet component.
-        //Before you can use this.context, however, you have to create an object to define this context typ
-        this.context.actionSheet().showActionSheetWithOptions(
-            {
-                options,
-                cancelButtonIndex,
-            },
-            async (buttonIndex) => {
-                switch (buttonIndex) {
-                    case 0:
-                        console.log('user wants to pick an image');
-                        return this.pickImage();
-                    case 1:
-                        console.log('user wants to take a photo');
-                        return this.takePhoto();
-                    case 2:
-                        console.log('user wants to get their location');
-                        return this.getLocation();
-                    default:
-                }
-            },
-        );
+        try {
+            //used to hand down data (the options you want to display) to the ActionSheet component.
+            //Before you can use this.context, however, you have to create an object to define this context typ
+            this.context.actionSheet().showActionSheetWithOptions(
+                {
+                    options,
+                    cancelButtonIndex,
+                },
+                async (buttonIndex) => {
+                    switch (buttonIndex) {
+                        case 0:
+                            console.log('user wants to pick an image');
+                            return this.pickImage();
+                        case 1:
+                            console.log('user wants to take a photo');
+                            return this.takePhoto();
+                        case 2:
+                            console.log('user wants to get their location');
+                            return this.getLocation();
+                        default:
+                    }
+                },
+            );
+        } catch (error) {
+            console.log(error.message);
+        }
     };
 
     uploadImage = async (uri) => {
