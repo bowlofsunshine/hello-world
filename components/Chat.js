@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, AsyncStorage, StatusBar, InputToolbar, KeyboardAvoidingView } from 'react-native';
+import { View, Text, StyleSheet, AsyncStorage, StatusBar, KeyboardAvoidingView } from 'react-native';
 import NetInfo from "@react-native-community/netinfo";
-import { GiftedChat, Bubble } from 'react-native-gifted-chat'
+import { GiftedChat, Bubble, InputToolbar } from 'react-native-gifted-chat'
 import KeyboardSpacer from "react-native-keyboard-spacer";
 import { Platform } from 'react-native';
 import CustomActions from './CustomActions';
@@ -11,6 +11,18 @@ import * as Location from 'expo-location';
 import MapView from 'react-native-maps';
 const firebase = require('firebase');
 require('firebase/firestore');
+/**
+ * @class chat
+ * @requires react
+ * @requires react-native
+ * @requires react-native-community/netinfo
+ * @requires react-native-gifted-chat
+ * @requires react-native-keyboard-spacer
+ * @requires ./CustomActions
+ * @requires react-native-maps
+ * @requires firebase
+ * @requires firestore
+ */
 
 export default class Chat extends React.Component {
     constructor() {
@@ -27,6 +39,19 @@ export default class Chat extends React.Component {
             image: null,
             location: null
         };
+
+        /**
+         * firestore app configuration
+         * @param {string} apiKey
+         * @param {string} authDomain
+         * @param {string} databaseURL
+         * @param {string} projectId
+         * @param {string} storageBucket
+         * @param {string} messagingSenderId
+         * @param {string} appId
+         * @param {string} measurementId
+         */
+
         // connect to firestore app
         if (!firebase.apps.length) {
             firebase.initializeApp({
@@ -44,6 +69,12 @@ export default class Chat extends React.Component {
         this.referenceMessages = firebase.firestore().collection("messages");
     }
 
+    /**
+   * saves messages to asyncStorage
+   * @async
+   * @function saveMessages
+   * @returns {Promise<string>} The data from the storage 
+   */
     async saveMessages() {
         try {
             await AsyncStorage.setItem('messages', JSON.stringify(this.state.messages));
@@ -51,7 +82,12 @@ export default class Chat extends React.Component {
             console.log(error.message);
         }
     }
-
+    /**
+    * stores messages in async storage so they are accessible offline
+    * @async
+    * @function getMessages
+    * @return messages
+    */
     async getMessages() {
         let messages = '';
         //wrap your logic in try and catch so that any errors will be caught
@@ -71,7 +107,12 @@ export default class Chat extends React.Component {
             console.log(error.message);
         }
     }
-
+    /**
+    * can delete messages from asyncStorage
+    * @async
+    * @function deleteMessages
+    * @param {none}
+    */
     async deleteMessages() {
         try {
             await AsyncStorage.removeItem('messages');
@@ -79,7 +120,12 @@ export default class Chat extends React.Component {
             console.log(error.message);
         }
     }
-    //Example messages for testing
+    /**
+     * NetInfo checks to see if the user is online
+     * then it uses firebase to authorize user and signin
+     * updates the user state with currently active user data
+     * get messages saved from the database
+     */
     componentDidMount() {
         NetInfo.fetch().then(isConnected => {
             if (isConnected == true) {
@@ -119,51 +165,12 @@ export default class Chat extends React.Component {
                 this.getMessages();
             }
         });
-        // this.authUnsubscribe = firebase.auth().onAuthStateChanged(async user => {
-        //     if (!user) {
-        //         user = await firebase.auth().signInAnonymously();
-        //     }
-
-        //     // update user state with currently active user data
-        //     this.setState({
-
-        //         uid: user.uid,
-        //         loggedInText: "Helloooooo"
-        //     });
-
-        //     this.unsubscribe = this.referenceMessages.onSnapshot(
-        //         this.onCollectionUpdate);
-        // });
-
-        // this.setState({
-        //     messages: [
-        //         {
-        //             _id: 1,
-        //             text: "Hello Developer",
-        //             createdAt: new Date(),
-        //             user: {
-        //                 _id: 2,
-        //                 name: "React Native",
-        //                 avatar: "https://placeimg.com/140/140/any"
-        //             }
-        //         },
-        //         {
-        //             _id: 2,
-        //             text: this.props.route.params.name + " entered the chat",
-        //             createdAt: new Date(),
-        //             system: true
-        //         }
-        //     ]
-        // });
-
-        // //create a reference to the active user's documents (messages)
-        // this.referenceMessages = firebase.firestore().collection('messages').where("uid", "==", this.state.uid);
-
-        // // listen for collection changes for current user
-        // this.unsubscribeListUser = this.referenceMessages.onSnapshot(this.onCollectionUpdate);
-
     }
-
+    /**
+     * @function onSend
+     * @param messages 
+     * @returns update with new message(s)
+     */
     //what will be called when a user sends a message
     onSend(messages = []) {
         //the function setState() is called with the parameter previousState, which is a reference to the component’s state at the time the change is applied
@@ -182,6 +189,17 @@ export default class Chat extends React.Component {
         // stop listening for changes
         this.unsubscribeMessager();
     }
+    /**
+    * Adds message(s) to the firebase database
+    * @function addMessage
+    * @param {number} _id
+    * @param {string} text
+    * @param {date} createdAt
+    * @param {object} user
+    * @param {object} uid
+    * @param {image} image
+    * @param {location} location
+    */
     addMessage() {
         this.referenceMessages.add({
             _id: this.state.messages[0]._id,
@@ -193,7 +211,17 @@ export default class Chat extends React.Component {
             location: this.state.messages[0].location || '',
         });
     }
-
+    /**
+     * updates firestore collection database whenever 
+     * collection is updated/called
+     * @function onCollectionUpdate
+     * @param {string} _id
+     * @param {string} text 
+     * @param {date} createdAt
+     * @param {object} user
+     * @param {image} image 
+     * @param {location} location
+     */
     onCollectionUpdate = querySnapshot => {
         const messages = [];
         querySnapshot.forEach(doc => {
@@ -216,6 +244,11 @@ export default class Chat extends React.Component {
         });
     };
 
+    /**
+     * altered Bubble component is returned from GiftedChat
+     * @function renderBubble
+     * @param {*} props 
+     */
     //altered Bubble component is returned from GiftedChat
     renderBubble(props) {
         return (
@@ -233,6 +266,12 @@ export default class Chat extends React.Component {
             />
         )
     };
+    /**
+     * does not render toolbar if internet is not online
+     * @function renderInputToolbar
+     * @param {*} props
+     * @returns {InputToolbar}
+     */
     renderInputToolbar(props) {
         if (this.state.isConnected == false) {
         } else {
@@ -247,6 +286,12 @@ export default class Chat extends React.Component {
     renderCustomActions = (props) => {
         return <CustomActions {...props} />;
     };
+    /**
+     * render map using user coordinates 
+     * @function renderCustomView
+     * @param {*} props
+     * @returns {MapView}
+     */
     //function is where you’ll check if the currentMessage contains location data
     renderCustomView(props) {
         const { currentMessage } = props;

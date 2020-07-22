@@ -7,12 +7,31 @@ import * as ImagePicker from 'expo-image-picker';
 import * as Location from 'expo-location';
 import { MapView } from 'react-native-maps';
 
+/**
+ * @class customActions
+ * @requires react
+ * @requires react-native
+ * @requires prop-types
+ * @requires expo-permissions
+ * @requires react-native-keyboard-spacer
+ * @requires expo-image-picker
+ * @requires expo-location
+ * @requires firebase
+ * @requires firestore
+ */
+
 const firebase = require('firebase');
 
 export default class CustomActions extends React.Component {
     constructor() {
         super();
     }
+
+    /**
+     * allows the user to set permissions to be able to choose a photo from their camera roll 
+     * @async
+     * @function pickImage
+     */
 
     pickImage = async () => {
         //ask the user for permission
@@ -37,7 +56,11 @@ export default class CustomActions extends React.Component {
             console.log(error.message);
         }
     }
-
+    /**
+     * allows the user to set permissions to be able to take and choose a photo from their camera roll 
+     * @async
+     * @function takePhoto
+     */
     takePhoto = async () => {
         //ask the user for permission
         const { status } = await Permissions.askAsync(
@@ -62,7 +85,11 @@ export default class CustomActions extends React.Component {
             console.log(error.message);
         }
     }
-
+    /**
+     * allows the user to set permissions to be able to send their current location
+     * @async
+     * @function getLocation 
+     */
     getLocation = async () => {
         try {
             //ask the user for permission
@@ -85,7 +112,11 @@ export default class CustomActions extends React.Component {
             console.log(error.message);
         }
     }
-
+    /**
+     * opens the menu when '+' is clicked
+     * to choose from sending a photo, taking a photo, or sending a location 
+     * @function onActionPress
+     */
     onActionPress = () => {
         const options = ['Choose From Library', 'Take Picture', 'Send Location', 'Cancel'];
         const cancelButtonIndex = options.length - 1;
@@ -117,6 +148,13 @@ export default class CustomActions extends React.Component {
         }
     };
 
+    /**
+     * allows user to upload an image as a blob to the firestore cloud storage
+     * @async
+     * @function uploadImage
+     * @param uri 
+     * @returns url 
+     */
     uploadImage = async (uri) => {
         const blob = await new Promise((resolve, reject) => {
             const xhr = new XMLHttpRequest();

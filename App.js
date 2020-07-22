@@ -12,6 +12,18 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 const Stack = createStackNavigator();
 
+/**
+ * @class HelloWorld
+ * @requires react
+ * @requires react-native
+ * @requires react-native-gesture-handler
+ * @requires firebase
+ * @requires firestore
+ * @requires Start
+ * @requires Chat
+ * @requires @react-navigation/native
+ * @requires @react-navigation/stack
+ */
 
 export default class HelloWorld extends Component {
 

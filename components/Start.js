@@ -5,7 +5,19 @@ const firebase = require('firebase');
 require('firebase/firestore');
 const image = require('../A5_project_assets/Background_Image.png');
 const icon = require('../A5_project_assets/icon.svg');
-export default class Screen1 extends React.Component {
+/**
+ * @class Start
+ * @requires react
+ * @requires react-native
+ * @requires react-native-gesture-handler
+ * @requires firebase
+ * @requires firestore
+ * @requires image 
+ * @requires icon
+ */
+
+
+export default class Start extends React.Component {
     constructor(props) {
         super(props);
         this.state = { name: '', color: '' };
